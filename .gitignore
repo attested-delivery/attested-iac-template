@@ -1,0 +1,21 @@
+# OpenTofu / Terraform working files — never commit these.
+.terraform/
+.terraform.tfstate.lock.info
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# Variable files that may carry secrets (commit *.tfvars examples explicitly).
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Build output
+dist/
+
+# Note: .terraform.lock.hcl IS committed (provider checksums — supply-chain
+# control). It is intentionally NOT ignored.

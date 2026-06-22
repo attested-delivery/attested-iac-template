@@ -1,0 +1,18 @@
+# Trivy configuration — auto-loaded from the repo root by the Trivy CLI (no
+# --config flag needed). Governs the filesystem scan run by the `trivy` job in
+# .github/workflows/quality-gates.yml, which calls the attested-delivery/.github
+# reusable with scanners=misconfig,license.
+#
+# Why skip `**/.terraform`:
+#   `.terraform/` is the engine's working directory — provider plugins and
+#   vendored modules that `tofu init` downloads. It is generated, never shipped,
+#   and gitignored. Scanning it just re-scans third-party provider code (covered
+#   by Dependabot's terraform ecosystem updates), so it is pure noise.
+#
+#   The module and the example roots ARE scanned — that is the point: Trivy's
+#   misconfig scanner walks every examples/<cloud>/*.tf and surfaces
+#   cloud-specific misconfiguration. Findings are advisory (the central reusable
+#   runs with exit-code 0); the "Code scanning results" check is the merge gate.
+scan:
+  skip-dirs:
+    - "**/.terraform"

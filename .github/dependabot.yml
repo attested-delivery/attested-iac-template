@@ -1,0 +1,48 @@
+version: 2
+updates:
+  # Terraform/OpenTofu provider + module pins across the module and examples.
+  # Keeps `.terraform.lock.hcl` provider checksums fresh — the module
+  # supply-chain control (modules get no lockfile guarantee; HCSEC-2024-04).
+  - package-ecosystem: "terraform"
+    directories:
+      - "/modules/labels"
+      - "/examples/aws"
+      - "/examples/gcp"
+      - "/examples/azure"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Chicago"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps)"
+    labels:
+      - "dependencies"
+      - "terraform"
+    reviewers:
+      - "attested-delivery/maintainers"
+
+  # GitHub Actions — keeps the central reusable SHA pins fresh.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Chicago"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    reviewers:
+      - "attested-delivery/maintainers"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"

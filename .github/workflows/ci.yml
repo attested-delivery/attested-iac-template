@@ -1,0 +1,42 @@
+---
+name: CI
+
+# Continuous integration: runs on every push and pull_request to main.
+# Thin callers of the central attested-delivery/.github reusables (pinned by the
+# .github repo's commit SHA). pin-check enforces the SHA-pinning invariant;
+# validate-workflows runs the centralized, verified actionlint fetch.
+
+"on":
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Every `uses:` in this repo MUST be pinned to a full 40-char commit SHA;
+  # tag/branch refs are rejected. THIN CALLER of the org's central pin-check
+  # reusable (never reinvented), itself pinned by the .github repo's commit SHA.
+  # attested-delivery/.github main @ aba1860 (resolved 2026-06-16)
+  pin-check:
+    permissions:
+      contents: read
+    uses: >-
+      attested-delivery/.github/.github/workflows/pin-check.yml@aba1860be6b6ebd5c0c0a0f07160946fb0349965
+
+  # Thin caller of the central reusable-actionlint — the verified, pinned
+  # actionlint download lives in the reusable (consume the central reusables,
+  # never reinvent them). Pinned by the .github repo's commit SHA.
+  # attested-delivery/.github @ b314c29 (#6 — in-step PATH fix)
+  validate-workflows:
+    permissions:
+      contents: read
+    uses: >-
+      attested-delivery/.github/.github/workflows/reusable-actionlint.yml@b314c29ac9d445ea1f6ad5487743a909e104ceb9

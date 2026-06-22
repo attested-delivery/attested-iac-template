@@ -1,0 +1,156 @@
+---
+name: quality-gates
+
+# Merge-time quality gates — thin callers of the attested-delivery/.github central
+# reusable workflows (pinned by full commit SHA), plus the Terraform-native
+# correctness checks. Each security gate normalizes on SARIF and surfaces in the
+# Security tab; wire the "Code scanning results" check as a required status check
+# to make it a merge gate.
+#
+# IaC security coverage is Trivy (misconfig/license) + Checkov (graph-based
+# policy) — complementary, not redundant. CodeQL/SAST runs on `languages:
+# actions` only: CodeQL has no HCL extractor, so it scans this repo's own
+# workflows, not the Terraform. terraform-checks runs fmt/validate/tflint across
+# the module and every example with ZERO cloud credentials (validate-only).
+
+"on":
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "37 6 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  sast:
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+      packages: read
+    # attested-delivery/.github main @ 698148e (post-#4, 2026-06-19)
+    uses: >-
+      attested-delivery/.github/.github/workflows/reusable-sast-codeql.yml@698148e12da113cfeeef8742c31ae93657959e67
+    with:
+      languages: actions
+      build-mode: none
+
+  sca:
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+      pull-requests: write
+    # attested-delivery/.github main @ 698148e (post-#4, 2026-06-19)
+    uses: >-
+      attested-delivery/.github/.github/workflows/reusable-sca-osv.yml@698148e12da113cfeeef8742c31ae93657959e67
+    with:
+      fail-on-severity: high
+
+  posture:
+    if: github.event_name == 'push' || github.event_name == 'schedule'
+    permissions:
+      security-events: write
+      id-token: write
+      contents: read
+      actions: read
+    # attested-delivery/.github main @ 698148e (post-#4, 2026-06-19)
+    uses: >-
+      attested-delivery/.github/.github/workflows/reusable-scorecard.yml@698148e12da113cfeeef8742c31ae93657959e67
+    with:
+      publish-results: false
+
+  trivy:
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+      packages: read
+    # attested-delivery/.github main @ 698148e (post-#4, 2026-06-19)
+    uses: >-
+      attested-delivery/.github/.github/workflows/reusable-trivy.yml@698148e12da113cfeeef8742c31ae93657959e67
+    with:
+      scan-iac: true
+
+  # IaC policy gate, pinned to the merged reusable-checkov
+  # (attested-delivery/.github#7).
+  checkov:
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    uses: >-
+      attested-delivery/.github/.github/workflows/reusable-checkov.yml@8fa29c50d765cedd33a7ed37a82d7075f59b764f
+    with:
+      directory: .
+
+  # Discover every directory containing Terraform/OpenTofu config (the module and
+  # whichever example roots this instance kept). Runtime discovery keeps the
+  # workflow identity-free: a Copier instance that prunes a cloud needs no edit
+  # here — the pruned directory simply isn't discovered.
+  discover:
+    name: discover tf dirs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      dirs: ${{ steps.find.outputs.dirs }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Find Terraform directories
+        id: find
+        run: |
+          set -euo pipefail
+          dirs=$(find . -type f -name '*.tf' -not -path '*/.terraform/*' \
+            -exec dirname {} \; | sed 's#^\./##' | sort -u | jq -R . | jq -cs .)
+          echo "dirs=${dirs}" >> "$GITHUB_OUTPUT"
+          echo "Discovered: ${dirs}"
+
+  # Terraform-native correctness: fmt, validate, and tflint across the module and
+  # every example. validate-only (no apply, no credentials) — provider blocks set
+  # skip flags / placeholder values so `validate` never reaches a cloud.
+  terraform-checks:
+    name: terraform-checks (${{ matrix.dir }})
+    needs: [discover]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        dir: ${{ fromJSON(needs.discover.outputs.dirs) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Install engine (checksum-verified; exports IAC_BIN)
+        run: bash bin/setup-engine.sh
+
+      - name: Install TFLint (checksum-verified)
+        run: bash bin/setup-tflint.sh
+
+      - name: Format check
+        working-directory: ${{ matrix.dir }}
+        run: "${IAC_BIN:-tofu} fmt -check -diff"
+
+      - name: Init (no backend, no credentials)
+        working-directory: ${{ matrix.dir }}
+        run: "${IAC_BIN:-tofu} init -backend=false -input=false -no-color"
+
+      - name: Validate
+        working-directory: ${{ matrix.dir }}
+        run: "${IAC_BIN:-tofu} validate -no-color"
+
+      - name: TFLint
+        working-directory: ${{ matrix.dir }}
+        run: tflint --no-color
