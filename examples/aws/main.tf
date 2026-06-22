@@ -18,17 +18,7 @@ module "labels" {
   environment = var.environment
 }
 
-# trivy:ignore:AVD-AWS-0089
 resource "aws_s3_bucket" "this" {
-  # This is a minimal, creditless example bucket whose purpose is to demonstrate
-  # consuming the labels module under the attested pipeline — not production
-  # storage. The operational best-practices below are out of scope for a
-  # single-resource demo and are suppressed with cause (real workloads should
-  # enable them):
-  #checkov:skip=CKV_AWS_18:Access logging requires a separate log-destination bucket
-  #checkov:skip=CKV_AWS_144:Cross-region replication requires a second-region bucket + IAM role
-  #checkov:skip=CKV2_AWS_61:Lifecycle configuration is environment-specific
-  #checkov:skip=CKV2_AWS_62:Event notifications require an SNS/SQS/Lambda target
   bucket = module.labels.name_prefix
   tags   = module.labels.tags
 }
@@ -41,9 +31,7 @@ resource "aws_s3_bucket_versioning" "this" {
   }
 }
 
-# trivy:ignore:AVD-AWS-0132 Demo uses AWS-managed KMS; a customer-managed key is environment-specific.
 resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
-  #checkov:skip=CKV_AWS_145:Demo uses AWS-managed KMS (aws:kms); a CMK is environment-specific
   bucket = aws_s3_bucket.this.id
 
   rule {
