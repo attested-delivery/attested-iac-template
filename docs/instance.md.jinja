@@ -1,0 +1,22 @@
+# {{ project_name }}
+
+{{ description }}
+
+This project was instantiated from
+[`attested-delivery/attested-iac-template`](https://github.com/attested-delivery/attested-iac-template)
+and inherits its attested delivery pipeline.
+
+- **Owner:** `{{ owner }}`
+- **Engine:** `{{ engine }}` (pinned `{{ engine_version }}`)
+- **Cloud examples:** {% for c in clouds %}`{{ c }}`{% if not loop.last %}, {% endif %}{% endfor %}
+
+## Next steps
+
+1. Edit `CODEOWNERS` to your team.
+2. Populate `.vex/openvex.json` with real dispositions as findings surface.
+3. Enable the required status checks (`pin-check`, code scanning, `terraform-checks`).
+4. Re-pin the `checkov` gate to the upstream `reusable-checkov.yml` SHA once the
+   org owner has merged it into `attested-delivery/.github` (see `SECURITY.md`).
+5. Cut a release: tag `vX.Y.Z` to run the attested release pipeline.
+
+Run `copier update` periodically to pull template improvements.

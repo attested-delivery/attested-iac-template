@@ -1,0 +1,105 @@
+name: Feature Request
+description: Suggest a new feature or enhancement
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please fill out the sections below.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve? Is this related to a frustration?
+      placeholder: I'm always frustrated when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like.
+      placeholder: I would like to be able to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Proposed Usage
+      description: If applicable, show how you envision the feature would be used.
+      render: hcl
+      placeholder: |
+        module "labels" {
+          source = "../../modules/labels"
+          # example of the new input/behavior
+        }
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of the template would this touch?
+      options:
+        - Module (modules/labels)
+        - Example roots (examples/*)
+        - Gates / workflows
+        - Copier prompts / instantiation
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Describe any alternative solutions or features you've considered.
+      placeholder: I've considered...
+
+  - type: dropdown
+    id: breaking
+    attributes:
+      label: Breaking Change
+      description: Would this alter existing module inputs/outputs or gate behavior?
+      options:
+        - "No"
+        - "Yes - minor changes"
+        - "Yes - significant changes"
+        - "Unsure"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: contribution
+    attributes:
+      label: Willingness to Contribute
+      description: Would you be willing to help implement this feature?
+      options:
+        - "Yes, I can submit a PR"
+        - "Yes, with guidance"
+        - "No, but I can help test"
+        - "No"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Add any other context, links, or examples about the feature request.
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched existing issues and discussions to ensure this feature has not already been requested.
+          required: true
+        - label: I have read the documentation to confirm this feature doesn't already exist.
+          required: true

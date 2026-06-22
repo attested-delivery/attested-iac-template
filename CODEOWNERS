@@ -1,0 +1,16 @@
+# CODEOWNERS — owners requested for review on matching paths.
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything in the repo
+* @attested-delivery/maintainers
+
+# Module + example HCL
+/modules/ @attested-delivery/maintainers
+/examples/ @attested-delivery/maintainers
+
+# Supply-chain surface — workflows, scanners, disposition, engine install
+/.github/ @attested-delivery/maintainers
+/.vex/ @attested-delivery/maintainers
+/trivy.yaml @attested-delivery/maintainers
+/.tflint.hcl @attested-delivery/maintainers
+/bin/ @attested-delivery/maintainers

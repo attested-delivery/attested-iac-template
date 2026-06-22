@@ -1,0 +1,72 @@
+# Copier template configuration. attested-iac-template is distributed as a living,
+# update-propagating template: `copier copy` instantiates it and `copier update`
+# re-applies later template improvements to an already-instantiated project.
+#
+# Only *.jinja files are rendered (suffix stripped on generation); every other
+# file is copied verbatim, so the attested workflows, the example HCL, the VEX
+# disposition, and the gates travel UNCHANGED — and this template repo keeps
+# passing its own gates (real, validating HCL, not Jinja'd HCL).
+
+_templates_suffix: ".jinja"
+_answers_file: ".copier-answers.yml"
+_subdirectory: "."
+
+# Files that must never be copied into an instantiated project. The per-cloud
+# entries render to an empty string (ignored) when a cloud is selected, and to
+# the example path (excluded) when it is not — so an instance gets exactly the
+# clouds it asked for, while the template repo itself always carries all three.
+_exclude:
+  - "copier.yml"
+  - ".git"
+  - ".terraform"
+  - "**/.terraform"
+  - "*.tfstate"
+  - "*.tfstate.*"
+  - "**/__pycache__"
+  - "*.pyc"
+  - "{% if 'aws' not in clouds %}examples/aws{% endif %}"
+  - "{% if 'gcp' not in clouds %}examples/gcp{% endif %}"
+  - "{% if 'azure' not in clouds %}examples/azure{% endif %}"
+
+# --- Instantiation Q&A -------------------------------------------------------
+
+project_name:
+  type: str
+  help: "Project / repository name"
+  default: "attested-iac-template"
+
+owner:
+  type: str
+  help: "GitHub owner — your user or organization"
+  default: "attested-delivery"
+
+description:
+  type: str
+  help: "One-line project description"
+  default: "An attested OpenTofu/Terraform project built on attested-iac-template"
+
+engine:
+  type: str
+  help: "IaC engine (OpenTofu is MPL/OSS; Terraform is BUSL from 1.6+)"
+  choices:
+    - opentofu
+    - terraform
+  default: "opentofu"
+
+engine_version:
+  type: str
+  help: "Engine version to pin (consumed by bin/setup-engine.sh)"
+  default: "{% if engine == 'opentofu' %}1.12.3{% else %}1.5.7{% endif %}"
+
+clouds:
+  type: str
+  help: "Cloud example roots to keep (space/comma to multi-select)"
+  multiselect: true
+  choices:
+    - aws
+    - gcp
+    - azure
+  default:
+    - aws
+    - gcp
+    - azure
