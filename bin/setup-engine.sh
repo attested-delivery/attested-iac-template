@@ -71,8 +71,13 @@ curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
 unzip -q -o "${work}/${zip}" "${bin}" -d "${dest}"
 chmod +x "${dest}/${bin}"
 
-# Expose on PATH for subsequent steps (GitHub Actions) or the current shell.
+# Expose on PATH for subsequent steps (GitHub Actions) or the current shell, and
+# publish the engine's binary name so later steps invoke the right CLI
+# (`tofu` vs `terraform`) without hard-coding it.
 if [ -n "${GITHUB_PATH:-}" ]; then
   echo "${dest}" >> "${GITHUB_PATH}"
+fi
+if [ -n "${GITHUB_ENV:-}" ]; then
+  echo "IAC_BIN=${bin}" >> "${GITHUB_ENV}"
 fi
 echo "Installed: $("${dest}/${bin}" version | head -n1) -> ${dest}/${bin}"

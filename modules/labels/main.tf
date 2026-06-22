@@ -11,7 +11,7 @@ locals {
   name_prefix = "${var.name}-${var.environment}-${random_id.suffix.hex}"
 
   standard_tags = {
-    "managed-by"  = "opentofu"
+    "managed-by"  = var.managed_by
     "module"      = "labels"
     "environment" = var.environment
     "name"        = var.name

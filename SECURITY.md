@@ -110,28 +110,14 @@ forged without control of the repository's GitHub Actions OIDC token.
 
 ---
 
-## Checkov bootstrap caveat
+## Checkov gate pin
 
 The `iac-policy/v1` attestation is produced by the **Checkov** gate, which calls
-a **new** central reusable (`reusable-checkov.yml`) that is **not yet merged
-upstream** into `attested-delivery/.github`. The callers are pinned to a
-bootstrap commit SHA, `9bb91c6b49b68ffebcd8f6a9419391badc70e97c`, that will not
-resolve on github.com until the org owner merges the reusable and the pin is
-updated to the real upstream SHA.
-
-Consequences until that re-pin lands:
-
-- **No `iac-policy/v1` attestation is produced**, so the step 2 loop above will
-  report *no matching attestation* for `iac-policy`. That is expected in the
-  bootstrap state — it is not a verification failure of a signed artifact.
-- The release pipeline's fail-closed `verify` job depends on
-  `attest-iac-policy`, so **a release cannot complete on github.com** until the
-  reusable is merged and re-pinned. There is no partially-attested release: the
-  pipeline either produces all required attestations or produces no release.
-
-Once `reusable-checkov.yml` is merged upstream, update both callers
-(`quality-gates.yml` and `release.yml`) to the real upstream SHA; the
-`iac-policy` verification then succeeds like the other three seam predicates.
+the central `reusable-checkov.yml`, merged into `attested-delivery/.github`
+([#7](https://github.com/attested-delivery/.github/pull/7)). The callers in
+`quality-gates.yml` and `release.yml` are pinned to that merged commit SHA,
+`8fa29c50d765cedd33a7ed37a82d7075f59b764f`, and Dependabot's `github-actions`
+updater keeps it fresh alongside the other central reusables.
 
 ---
 

@@ -60,12 +60,10 @@ release — `iac-license/v1` for Trivy, `iac-policy/v1` for Checkov. A verifier 
 assert *both* a misconfiguration/license verdict and a graph-policy verdict
 travelled with the artifact, independently.
 
-Because Checkov's gate calls a **new** central reusable
-(`reusable-checkov.yml`) that is not yet merged upstream, its callers are pinned
-to a bootstrap SHA that won't resolve on github.com until the org owner merges
-it — until then the `iac-policy/v1` predicate is simply absent, and the
-fail-closed release pipeline (which requires it) won't complete. That is by
-design: a partially-attested release is not a release.
+Checkov's gate calls the central `reusable-checkov.yml` (merged into
+`attested-delivery/.github`), and the fail-closed release pipeline requires its
+`iac-policy/v1` predicate to be present and verified — a partially-attested
+release is not a release.
 
 ## Why CodeQL can't read the HCL
 

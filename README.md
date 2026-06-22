@@ -51,8 +51,8 @@ Copier prompts for:
 Only `.copier-answers.yml` and `docs/instance.md` are rendered; everything else
 is copied verbatim. Pull later template fixes with `copier update`.
 
-See [docs/how-to/instantiate.md](docs/how-to/instantiate.md) for the answers,
-post-instantiation steps, and the Checkov re-pin.
+See [docs/how-to/instantiate.md](docs/how-to/instantiate.md) for the answers and
+post-instantiation steps.
 
 ## Engine and cloud choices
 
@@ -100,28 +100,20 @@ predicates: SLSA provenance `https://slsa.dev/provenance/v1`, CycloneDX SBOM
 > **Signed ≠ passed.** A verified attestation proves the gate *ran and recorded a
 > verdict* bound to the artifact digest. Read the predicate body for the verdict.
 
-## Checkov reusable bootstrap — read before you push
+## Checkov gate pin
 
-The Checkov gate calls a **new** central reusable, `reusable-checkov.yml`, that
-is **not yet merged upstream** into `attested-delivery/.github`. Its callers (in
-`quality-gates.yml` and `release.yml`) are pinned to a bootstrap commit SHA:
+The Checkov gate calls the central `reusable-checkov.yml`, merged into
+`attested-delivery/.github` ([#7](https://github.com/attested-delivery/.github/pull/7)).
+Its callers (in `quality-gates.yml` and `release.yml`) are pinned to that merged
+commit SHA:
 
 ```
-9bb91c6b49b68ffebcd8f6a9419391badc70e97c
+8fa29c50d765cedd33a7ed37a82d7075f59b764f
 ```
 
-This SHA **will not resolve on github.com** until the org owner merges the
-reusable and the pin is updated to the real upstream SHA. `pin-check` validates
-the SHA *format*, not its existence, so it passes — but until the re-pin:
-
-- the `checkov` / `gate-checkov` jobs cannot run on github.com, and
-- because `release.yml`'s fail-closed `verify` depends on `attest-iac-policy`,
-  the **release pipeline cannot complete** until the reusable is merged and
-  re-pinned.
-
-After the owner merges `reusable-checkov.yml`, update both callers to the real
-upstream SHA. See [docs/how-to/instantiate.md](docs/how-to/instantiate.md#re-pin-the-checkov-reusable)
-and [SECURITY.md](SECURITY.md#checkov-bootstrap-caveat).
+Dependabot's `github-actions` updater keeps this pin fresh alongside the other
+central reusables. As with every `uses:`, it is a full 40-char commit SHA, so
+`pin-check` passes.
 
 ## Documentation
 

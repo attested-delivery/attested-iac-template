@@ -4,8 +4,14 @@ variable "name" {
 
   validation {
     condition     = can(regex("^[a-z][a-z0-9-]{1,30}[a-z0-9]$", var.name))
-    error_message = "name must be 3-32 chars, lowercase alphanumeric or hyphen, and start with a letter."
+    error_message = "name must be 3-32 chars, lowercase alphanumeric or hyphen, start with a letter, and not end with a hyphen."
   }
+}
+
+variable "managed_by" {
+  description = "Value for the standard `managed-by` tag. Defaults to opentofu; set to \"terraform\" (or your tool) for accurate inventory when the engine differs."
+  type        = string
+  default     = "opentofu"
 }
 
 variable "environment" {

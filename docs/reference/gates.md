@@ -56,13 +56,10 @@ The custom-predicate namespace is
 > verdict* bound to the artifact digest. The verdict itself is in the predicate
 > body.
 
-## Checkov bootstrap caveat
+## Checkov gate pin
 
-The `gate-checkov` / `checkov` jobs call `reusable-checkov.yml`, a **new** central
-reusable **not yet merged upstream**. Both callers are pinned to the bootstrap
-SHA `9bb91c6b49b68ffebcd8f6a9419391badc70e97c`, which does not resolve on
-github.com. `pin-check` validates SHA *format* only, so it passes — but until the
-reusable is merged and re-pinned, the Checkov gate cannot run, no `iac-policy/v1`
-attestation is produced, and (because `verify` needs `attest-iac-policy`) no
-release can complete. See
-[instantiate.md](../how-to/instantiate.md#re-pin-the-checkov-reusable).
+The `gate-checkov` / `checkov` jobs call `reusable-checkov.yml`, merged into
+`attested-delivery/.github`
+([#7](https://github.com/attested-delivery/.github/pull/7)). Both callers are
+pinned to that merged commit SHA `8fa29c50d765cedd33a7ed37a82d7075f59b764f`,
+kept fresh by Dependabot's `github-actions` updater.

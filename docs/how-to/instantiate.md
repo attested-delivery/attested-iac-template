@@ -72,33 +72,12 @@ Do these before relying on the gates and before your first release.
    with your org/repo in `README.md` and `SECURITY.md` (see `docs/instance.md`
    for the rendered list).
 
-5. **Re-pin the Checkov reusable** (below) once it is merged upstream.
+### Checkov gate pin
 
-### Re-pin the Checkov reusable
-
-The Checkov gate calls a **new** central reusable, `reusable-checkov.yml`, that
-is **not yet merged upstream** into `attested-delivery/.github`. Its callers in
+The Checkov gate calls the central `reusable-checkov.yml`, merged into
+`attested-delivery/.github`
+([#7](https://github.com/attested-delivery/.github/pull/7)). Its callers in
 `.github/workflows/quality-gates.yml` and `.github/workflows/release.yml` are
-pinned to a bootstrap commit SHA:
-
-```
-9bb91c6b49b68ffebcd8f6a9419391badc70e97c
-```
-
-This SHA does **not** resolve on github.com yet. `pin-check` validates the SHA
-*format*, not its existence, so CI's pin check passes — but the `checkov` /
-`gate-checkov` jobs cannot run, and because the release `verify` job depends on
-`attest-iac-policy`, **no release can complete** until the re-pin lands.
-
-After the org owner merges `reusable-checkov.yml`, resolve the real upstream SHA
-and update both callers:
-
-```bash
-# Resolve the merged commit on the .github default branch (or a tag, if cut):
-gh api repos/attested-delivery/.github/commits/main --jq .sha
-
-# Replace 9bb91c6b49b68ffebcd8f6a9419391badc70e97c in both files with that SHA.
-```
-
-Then re-run CI; the `checkov` gate runs and the release path produces the
-`iac-policy/v1` attestation that `verify` requires.
+pinned to that merged commit SHA (`8fa29c50d765cedd33a7ed37a82d7075f59b764f`),
+which Dependabot's `github-actions` updater keeps fresh alongside the other
+central reusables — no manual action needed.

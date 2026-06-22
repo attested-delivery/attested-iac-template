@@ -5,7 +5,7 @@
 # lets the template's own CI `validate` the module with zero credentials while
 # still exercising real provider pinning and a committed `.terraform.lock.hcl`.
 terraform {
-  required_version = ">= 1.6.0"
+  required_version = ">= 1.5.0"
 
   required_providers {
     random = {

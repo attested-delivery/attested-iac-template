@@ -21,7 +21,7 @@ updates:
       - "dependencies"
       - "terraform"
     reviewers:
-      - "attested-delivery"
+      - "attested-delivery/maintainers"
 
   # GitHub Actions — keeps the central reusable SHA pins fresh.
   - package-ecosystem: "github-actions"
@@ -38,7 +38,7 @@ updates:
       - "dependencies"
       - "github-actions"
     reviewers:
-      - "attested-delivery"
+      - "attested-delivery/maintainers"
     groups:
       github-actions:
         patterns:

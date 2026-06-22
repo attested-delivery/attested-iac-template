@@ -51,7 +51,7 @@ tflint                              # in modules/labels and each examples/<cloud
 ### Supply chain
 
 - [ ] Every `uses:` I added/changed is pinned to a full 40-char commit SHA (`pin-check` passes)
-- [ ] If I touched the Checkov caller, the pin is intentional (bootstrap SHA until `reusable-checkov.yml` is merged — see SECURITY.md)
+- [ ] If I touched the Checkov caller, the pin matches the merged `reusable-checkov.yml` SHA (see SECURITY.md)
 - [ ] No new third-party action is referenced without it being on the org allow-list
 
 ### Documentation

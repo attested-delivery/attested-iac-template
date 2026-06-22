@@ -80,17 +80,15 @@ jobs:
     with:
       scan-iac: true
 
-  # NEW gate. BOOTSTRAP PIN: reusable-checkov.yml is not yet merged upstream into
-  # attested-delivery/.github — this SHA is a local commit. Re-pin to the real
-  # upstream commit SHA after the owner merges the reusable. Until then this job
-  # cannot resolve on github.com (pin-check validates SHA *format*, not existence).
+  # IaC policy gate, pinned to the merged reusable-checkov
+  # (attested-delivery/.github#7).
   checkov:
     permissions:
       contents: read
       security-events: write
       actions: read
     uses: >-
-      attested-delivery/.github/.github/workflows/reusable-checkov.yml@9bb91c6b49b68ffebcd8f6a9419391badc70e97c
+      attested-delivery/.github/.github/workflows/reusable-checkov.yml@8fa29c50d765cedd33a7ed37a82d7075f59b764f
     with:
       directory: .
 
@@ -135,7 +133,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
-      - name: Install engine (OpenTofu, checksum-verified)
+      - name: Install engine (checksum-verified; exports IAC_BIN)
         run: bash bin/setup-engine.sh
 
       - name: Install TFLint (checksum-verified)
@@ -143,15 +141,15 @@ jobs:
 
       - name: Format check
         working-directory: ${{ matrix.dir }}
-        run: tofu fmt -check -diff
+        run: "${IAC_BIN:-tofu} fmt -check -diff"
 
       - name: Init (no backend, no credentials)
         working-directory: ${{ matrix.dir }}
-        run: tofu init -backend=false -input=false -no-color
+        run: "${IAC_BIN:-tofu} init -backend=false -input=false -no-color"
 
       - name: Validate
         working-directory: ${{ matrix.dir }}
-        run: tofu validate -no-color
+        run: "${IAC_BIN:-tofu} validate -no-color"
 
       - name: TFLint
         working-directory: ${{ matrix.dir }}

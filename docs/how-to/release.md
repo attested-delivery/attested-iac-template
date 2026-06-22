@@ -17,13 +17,6 @@ build tarball → attest provenance → generate + attest SBOM
 
 ## Before you start
 
-- **Re-pin the Checkov reusable.** Until `reusable-checkov.yml` is merged
-  upstream and both callers are re-pinned to its real SHA, the bootstrap pin
-  (`9bb91c6b49b68ffebcd8f6a9419391badc70e97c`) does not resolve on github.com,
-  the `gate-checkov` / `attest-iac-policy` jobs cannot run, and the fail-closed
-  `verify` (which depends on `attest-iac-policy`) cannot complete — so **no
-  release can be cut**. See
-  [instantiate.md](instantiate.md#re-pin-the-checkov-reusable).
 - Ensure CI is green on the commit you intend to tag.
 
 ## 1. Dry-run with `workflow_dispatch`
@@ -87,9 +80,7 @@ gh attestation verify "$ARTIFACT" --owner attested-delivery \
 > Verify: each command exits `0` and prints `✓ Verification succeeded!`. A
 > non-zero exit is a supply-chain integrity failure — do not use the artifact.
 
-See [SECURITY.md](../../SECURITY.md) for the full verification reference,
-including the Checkov bootstrap caveat (the `iac-policy` command reports *no
-matching attestation* until the reusable is merged and re-pinned).
+See [SECURITY.md](../../SECURITY.md) for the full verification reference.
 
 ## Promotion
 

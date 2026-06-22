@@ -271,10 +271,8 @@ jobs:
       predicate-filename: ${{ needs.gate-trivy.outputs.sarif-filename }}
 
   # ---------------------------------------------------------------------------
-  # IaC policy (Checkov, graph-based) gate + seam.
-  # BOOTSTRAP PIN: reusable-checkov.yml is not yet merged upstream into
-  # attested-delivery/.github — this SHA is a local commit. Re-pin to the real
-  # upstream commit SHA after the owner merges the reusable.
+  # IaC policy (Checkov, graph-based) gate + seam. Pinned to the merged
+  # reusable-checkov (attested-delivery/.github#7).
   # ---------------------------------------------------------------------------
   gate-checkov:
     name: Gate — Checkov (IaC policy)
@@ -284,7 +282,7 @@ jobs:
       security-events: write
       actions: read
     uses: >-
-      attested-delivery/.github/.github/workflows/reusable-checkov.yml@9bb91c6b49b68ffebcd8f6a9419391badc70e97c
+      attested-delivery/.github/.github/workflows/reusable-checkov.yml@8fa29c50d765cedd33a7ed37a82d7075f59b764f
     with:
       directory: .
 
