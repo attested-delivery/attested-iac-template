@@ -29,7 +29,7 @@ jobs:
     permissions:
       contents: read
     uses: >-
-      attested-delivery/.github/.github/workflows/pin-check.yml@aba1860be6b6ebd5c0c0a0f07160946fb0349965
+      attested-delivery/.github/.github/workflows/pin-check.yml@ca91728c87beb08742325b4ed4d06fcfb261435b
 
   # Thin caller of the central reusable-actionlint — the verified, pinned
   # actionlint download lives in the reusable (consume the central reusables,
