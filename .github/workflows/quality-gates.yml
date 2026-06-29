@@ -38,7 +38,7 @@ jobs:
       packages: read
     # attested-delivery/.github main @ 698148e (post-#4, 2026-06-19)
     uses: >-
-      attested-delivery/.github/.github/workflows/reusable-sast-codeql.yml@698148e12da113cfeeef8742c31ae93657959e67
+      attested-delivery/.github/.github/workflows/reusable-sast-codeql.yml@ca91728c87beb08742325b4ed4d06fcfb261435b
     with:
       languages: actions
       build-mode: none
